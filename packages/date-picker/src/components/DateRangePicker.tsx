@@ -1,28 +1,28 @@
 import { useState } from 'react';
 import { Calendar } from './Calendar';
-import { addMonths } from '../core/calendar';
-import { formatInputDate, isBetweenDays, isSameDay } from '../core/dateUtils';
+import { useCalendarAdapter } from '../core/calendarAdapter';
 import { DateRangeValue, selectDateRangeDate } from '../core/selection';
 import '../styles.css';
 
 export function DateRangePicker() {
-  const [visibleMonthStart, setVisibleMonthStart] = useState(() => new Date());
+  const adapter = useCalendarAdapter();
+  const [visibleMonthStart, setVisibleMonthStart] = useState(() => adapter.today());
   const [selectedRange, setSelectedRange] = useState<DateRangeValue>({
     startDate: null,
     endDate: null,
   });
 
-  const visibleMonthEnd = addMonths(visibleMonthStart, 1);
-  const mobileVisibleMonths = Array.from({ length: 9 }, (_, monthOffset) => addMonths(visibleMonthStart, monthOffset));
+  const desktopVisibleMonths = adapter.createMonthSequence(visibleMonthStart, 2);
+  const mobileVisibleMonths = adapter.createMonthSequence(visibleMonthStart, 9);
 
   const getRangeDayState = (date: Date) => ({
-    selected: isSameDay(date, selectedRange.startDate) || isSameDay(date, selectedRange.endDate),
-    inRange: isBetweenDays(date, selectedRange.startDate, selectedRange.endDate),
-    rangeStart: isSameDay(date, selectedRange.startDate),
-    rangeEnd: isSameDay(date, selectedRange.endDate),
+    selected: adapter.isSameDay(date, selectedRange.startDate) || adapter.isSameDay(date, selectedRange.endDate),
+    inRange: adapter.isBetweenDays(date, selectedRange.startDate, selectedRange.endDate),
+    rangeStart: adapter.isSameDay(date, selectedRange.startDate),
+    rangeEnd: adapter.isSameDay(date, selectedRange.endDate),
   });
 
-  const selectRangeDate = (date: Date) => setSelectedRange((currentRange) => selectDateRangeDate(currentRange, date));
+  const selectRangeDate = (date: Date) => setSelectedRange((currentRange) => selectDateRangeDate(currentRange, date, adapter));
 
   return (
     <div className="adp-picker">
@@ -30,20 +30,20 @@ export function DateRangePicker() {
         <button
           type="button"
           className="adp-nav-button adp-range-nav-button"
-          onClick={() => setVisibleMonthStart((currentMonth) => addMonths(currentMonth, -1))}
+          onClick={() => setVisibleMonthStart((currentMonth) => adapter.addMonths(currentMonth, -1))}
           aria-label="Previous month"
         >
           ‹
         </button>
         <Calendar
-          month={visibleMonthStart}
+          month={desktopVisibleMonths[0]}
           onMonthChange={setVisibleMonthStart}
           onDateSelect={selectRangeDate}
           getDayState={getRangeDayState}
           showNavigation={false}
         />
         <Calendar
-          month={visibleMonthEnd}
+          month={desktopVisibleMonths[1]}
           onMonthChange={setVisibleMonthStart}
           onDateSelect={selectRangeDate}
           getDayState={getRangeDayState}
@@ -52,7 +52,7 @@ export function DateRangePicker() {
         <button
           type="button"
           className="adp-nav-button adp-range-nav-button"
-          onClick={() => setVisibleMonthStart((currentMonth) => addMonths(currentMonth, 1))}
+          onClick={() => setVisibleMonthStart((currentMonth) => adapter.addMonths(currentMonth, 1))}
           aria-label="Next month"
         >
           ›
@@ -61,7 +61,7 @@ export function DateRangePicker() {
       <div className="adp-range-calendars-mobile">
         {mobileVisibleMonths.map((month) => (
           <Calendar
-            key={month.toISOString()}
+            key={adapter.getDateKey(month)}
             month={month}
             onMonthChange={setVisibleMonthStart}
             onDateSelect={selectRangeDate}
@@ -71,7 +71,7 @@ export function DateRangePicker() {
         ))}
       </div>
       <div className="adp-selection-label">
-        Selected range: {formatInputDate(selectedRange.startDate) || 'Start'} → {formatInputDate(selectedRange.endDate) || 'End'}
+        Selected range: {adapter.formatInputDate(selectedRange.startDate) || 'Start'} → {adapter.formatInputDate(selectedRange.endDate) || 'End'}
       </div>
     </div>
   );
