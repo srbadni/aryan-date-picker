@@ -44,10 +44,11 @@ export function Calendar({ month, onMonthChange, onDateSelect, getDayState, show
 
       <div className="adp-calendar-grid">
         {days.map((calendarDay) => {
-          const dayState = getDayState(calendarDay.date);
+          const isPlaceholderDay = !calendarDay.isCurrentMonth;
+          const dayState = isPlaceholderDay ? {} : getDayState(calendarDay.date);
           const className = [
             'adp-day',
-            !calendarDay.isCurrentMonth ? 'adp-day-muted' : '',
+            isPlaceholderDay ? 'adp-day-placeholder' : '',
             dayState.selected ? 'adp-day-selected' : '',
             dayState.inRange ? 'adp-day-in-range' : '',
             dayState.rangeStart ? 'adp-day-range-start' : '',
@@ -62,8 +63,11 @@ export function Calendar({ month, onMonthChange, onDateSelect, getDayState, show
               type="button"
               className={className}
               onClick={() => onDateSelect(calendarDay.date)}
+              disabled={isPlaceholderDay}
+              aria-hidden={isPlaceholderDay}
+              tabIndex={isPlaceholderDay ? -1 : undefined}
             >
-              {calendarDay.day}
+              {isPlaceholderDay ? null : calendarDay.day}
             </button>
           );
         })}

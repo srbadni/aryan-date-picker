@@ -11,12 +11,44 @@ pnpm add aryan-date-picker
 ## Basic usage
 
 ```tsx
+import { useState } from 'react';
 import { DatePicker } from 'aryan-date-picker';
 import 'aryan-date-picker/styles.css';
 
 export function App() {
-  return <DatePicker />;
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
+  return <DatePicker value={selectedDate} onChange={setSelectedDate} />;
 }
+```
+
+
+## Controlled and uncontrolled values
+
+`DatePicker` and `DateRangePicker` support the standard React controlled component pattern. Pass `value` and `onChange` when the selected value should be owned by your application state.
+
+```tsx
+import { useState } from 'react';
+import { DatePicker, DateRangePicker, type DateRangeValue } from 'aryan-date-picker';
+
+export function ControlledExample() {
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedRange, setSelectedRange] = useState<DateRangeValue | null>(null);
+
+  return (
+    <>
+      <DatePicker value={selectedDate} onChange={setSelectedDate} />
+      <DateRangePicker value={selectedRange} onChange={setSelectedRange} />
+    </>
+  );
+}
+```
+
+For lightweight usage, omit `value` and optionally provide `defaultValue` to let the component manage its own selected value.
+
+```tsx
+<DatePicker defaultValue={new Date()} />
+<DateRangePicker defaultValue={{ startDate: new Date(), endDate: null }} />
 ```
 
 ## Why the localization layer exists

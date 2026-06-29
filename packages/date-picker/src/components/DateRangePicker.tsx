@@ -4,13 +4,28 @@ import { useCalendarAdapter } from '../core/calendarAdapter';
 import { DateRangeValue, selectDateRangeDate } from '../core/selection';
 import '../styles.css';
 
-export function DateRangePicker() {
+export type DateRangePickerProps = {
+  value?: DateRangeValue | null;
+  defaultValue?: DateRangeValue | null;
+  onChange?: (range: DateRangeValue | null) => void;
+};
+
+const emptyRange: DateRangeValue = {
+  startDate: null,
+  endDate: null,
+};
+
+function normalizeRange(range: DateRangeValue | null | undefined): DateRangeValue {
+  return range ?? emptyRange;
+}
+
+export function DateRangePicker({ value, defaultValue = null, onChange }: DateRangePickerProps = {}) {
   const adapter = useCalendarAdapter();
-  const [visibleMonthStart, setVisibleMonthStart] = useState(() => adapter.today());
-  const [selectedRange, setSelectedRange] = useState<DateRangeValue>({
-    startDate: null,
-    endDate: null,
-  });
+  const initialRange = normalizeRange(value ?? defaultValue);
+  const [visibleMonthStart, setVisibleMonthStart] = useState(() => initialRange.startDate ?? adapter.today());
+  const [uncontrolledSelectedRange, setUncontrolledSelectedRange] = useState<DateRangeValue>(initialRange);
+  const isControlled = value !== undefined;
+  const selectedRange = isControlled ? normalizeRange(value) : uncontrolledSelectedRange;
 
   const desktopVisibleMonths = adapter.createMonthSequence(visibleMonthStart, 2);
   const mobileVisibleMonths = adapter.createMonthSequence(visibleMonthStart, 9);
@@ -22,7 +37,15 @@ export function DateRangePicker() {
     rangeEnd: adapter.isSameDay(date, selectedRange.endDate),
   });
 
-  const selectRangeDate = (date: Date) => setSelectedRange((currentRange) => selectDateRangeDate(currentRange, date, adapter));
+  const selectRangeDate = (date: Date) => {
+    const nextRange = selectDateRangeDate(selectedRange, date, adapter);
+
+    if (!isControlled) {
+      setUncontrolledSelectedRange(nextRange);
+    }
+
+    onChange?.(nextRange);
+  };
 
   return (
     <div style={{direction: adapter.direction}} className="adp-picker">
@@ -35,20 +58,22 @@ export function DateRangePicker() {
         >
           ‹
         </button>
-        <Calendar
-          month={desktopVisibleMonths[0]}
-          onMonthChange={setVisibleMonthStart}
-          onDateSelect={selectRangeDate}
-          getDayState={getRangeDayState}
-          showNavigation={false}
-        />
-        <Calendar
-          month={desktopVisibleMonths[1]}
-          onMonthChange={setVisibleMonthStart}
-          onDateSelect={selectRangeDate}
-          getDayState={getRangeDayState}
-          showNavigation={false}
-        />
+        <div className="adp-range-calendar-surface">
+          <Calendar
+            month={desktopVisibleMonths[0]}
+            onMonthChange={setVisibleMonthStart}
+            onDateSelect={selectRangeDate}
+            getDayState={getRangeDayState}
+            showNavigation={false}
+          />
+          <Calendar
+            month={desktopVisibleMonths[1]}
+            onMonthChange={setVisibleMonthStart}
+            onDateSelect={selectRangeDate}
+            getDayState={getRangeDayState}
+            showNavigation={false}
+          />
+        </div>
         <button
           type="button"
           className="adp-nav-button adp-range-nav-button"
