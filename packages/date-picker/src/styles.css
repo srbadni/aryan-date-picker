@@ -1,0 +1,193 @@
+.adp-picker,
+.adp-date-picker,
+.adp-date-picker * {
+  box-sizing: border-box;
+}
+
+.adp-picker {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  font: inherit;
+  color: #111827;
+}
+
+.adp-date-picker {
+  width: 18rem;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.75rem;
+  background: #ffffff;
+}
+
+.adp-calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.adp-calendar-header-centered {
+  justify-content: center;
+}
+
+.adp-month-label {
+  font-weight: 600;
+}
+
+.adp-nav-button,
+.adp-day {
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.adp-nav-button {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.adp-range-calendars {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.adp-range-calendar-surface {
+  display: flex;
+  align-items: stretch;
+}
+
+.adp-range-calendar-surface .adp-date-picker {
+  border-radius: 0;
+}
+
+.adp-range-calendar-surface .adp-date-picker:first-child {
+  border-start-start-radius: 0.75rem;
+  border-end-start-radius: 0.75rem;
+}
+
+.adp-range-calendar-surface .adp-date-picker:last-child {
+  margin-inline-start: -1px;
+  border-start-end-radius: 0.75rem;
+  border-end-end-radius: 0.75rem;
+}
+
+.adp-range-nav-button {
+  flex: 0 0 auto;
+}
+
+.adp-nav-button:hover,
+.adp-day:not(.adp-day-placeholder):hover {
+  background: #e5e7eb;
+}
+
+.adp-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.25rem;
+}
+
+.adp-weekdays {
+  margin-top: 0.25rem;
+}
+
+.adp-weekday {
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.adp-day {
+  min-width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: transparent;
+  color: #111827;
+}
+
+.adp-day-placeholder {
+  cursor: default;
+  pointer-events: none;
+}
+
+.adp-day-in-range {
+  border-radius: 0.25rem;
+  background: #dbeafe;
+}
+
+.adp-day-selected,
+.adp-day-range-start,
+.adp-day-range-end {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.adp-day-selected:hover,
+.adp-day-range-start:hover,
+.adp-day-range-end:hover {
+  background: #1d4ed8;
+}
+
+.adp-selection-label {
+  color: #4b5563;
+  font-size: 0.875rem;
+}
+
+.adp-range-calendars-mobile {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .adp-picker {
+    width: 100%;
+  }
+
+  .adp-date-picker {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+  }
+
+  .adp-day {
+    width: 100%;
+    min-width: 0;
+    height: 2.5rem;
+  }
+
+  .adp-range-calendars-desktop {
+    display: none;
+  }
+
+  .adp-range-calendars-mobile {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .adp-range-calendars-mobile .adp-date-picker {
+    border-radius: 0;
+  }
+
+  .adp-range-calendars-mobile .adp-date-picker + .adp-date-picker {
+    margin-top: -1px;
+  }
+
+  .adp-range-calendars-mobile .adp-date-picker:first-child {
+    border-start-start-radius: 0.5rem;
+    border-start-end-radius: 0.5rem;
+  }
+
+  .adp-range-calendars-mobile .adp-date-picker:last-child {
+    border-end-start-radius: 0.5rem;
+    border-end-end-radius: 0.5rem;
+  }
+}

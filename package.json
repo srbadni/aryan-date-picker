@@ -1,0 +1,9 @@
+{
+  "name": "aryan-date-picker-workspace",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter playground dev",
+    "build": "pnpm --filter aryan-date-picker build",
+    "clean": "pnpm --filter aryan-date-picker clean && pnpm --filter playground clean"
+  }
+}

@@ -1,1 +1,10 @@
+node_modules
+/dist
+packages/*/dist
+playground/dist
 .idea
+dist
+playground/node_modules
+.env
+.env.local
+.DS_Store
