@@ -1,37 +1,9 @@
 {
-  "name": "aryan-date-picker",
-  "version": "0.1.0",
-  "description": "A lightweight React date picker component library.",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
-    },
-    "./styles.css": "./dist/index.css"
-  },
-  "files": [
-    "dist"
-  ],
-  "sideEffects": [
-    "**/*.css"
-  ],
+  "name": "aryan-date-picker-workspace",
+  "private": true,
   "scripts": {
-    "dev": "tsup --watch",
-    "build": "tsup",
-    "clean": "rm -rf dist"
-  },
-  "peerDependencies": {
-    "react": ">=18",
-    "react-dom": ">=18"
-  },
-  "devDependencies": {
-    "@types/react": "^18.3.23",
-    "@types/react-dom": "^18.3.7",
-    "tsup": "^8.5.0",
-    "typescript": "^5.8.3"
+    "dev": "pnpm --filter playground dev",
+    "build": "pnpm --filter aryan-date-picker build",
+    "clean": "pnpm --filter aryan-date-picker clean && pnpm --filter playground clean"
   }
 }
