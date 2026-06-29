@@ -12,21 +12,26 @@ type CalendarProps = {
   onMonthChange: (month: Date) => void;
   onDateSelect: (date: Date) => void;
   getDayState: (date: Date) => CalendarDayState;
+  showNavigation?: boolean;
 };
 
-export function Calendar({ month, onMonthChange, onDateSelect, getDayState }: CalendarProps) {
+export function Calendar({ month, onMonthChange, onDateSelect, getDayState, showNavigation = true }: CalendarProps) {
   const days = createCalendarMonth(month);
 
   return (
     <div className="adp-date-picker">
-      <div className="adp-calendar-header">
-        <button type="button" className="adp-nav-button" onClick={() => onMonthChange(addMonths(month, -1))} aria-label="Previous month">
-          ‹
-        </button>
+      <div className={`adp-calendar-header${showNavigation ? '' : ' adp-calendar-header-centered'}`}>
+        {showNavigation ? (
+          <button type="button" className="adp-nav-button" onClick={() => onMonthChange(addMonths(month, -1))} aria-label="Previous month">
+            ‹
+          </button>
+        ) : null}
         <div className="adp-month-label">{getMonthLabel(month)}</div>
-        <button type="button" className="adp-nav-button" onClick={() => onMonthChange(addMonths(month, 1))} aria-label="Next month">
-          ›
-        </button>
+        {showNavigation ? (
+          <button type="button" className="adp-nav-button" onClick={() => onMonthChange(addMonths(month, 1))} aria-label="Next month">
+            ›
+          </button>
+        ) : null}
       </div>
 
       <div className="adp-calendar-grid adp-weekdays">

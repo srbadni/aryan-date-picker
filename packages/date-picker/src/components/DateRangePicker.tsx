@@ -1,29 +1,62 @@
 import { useState } from 'react';
 import { Calendar } from './Calendar';
+import { addMonths } from '../core/calendar';
 import { formatInputDate, isBetweenDays, isSameDay } from '../core/dateUtils';
 import { DateRangeValue, selectDateRangeDate } from '../core/selection';
 import '../styles.css';
 
 export function DateRangePicker() {
-  const [visibleMonth, setVisibleMonth] = useState(() => new Date());
+  const [visibleMonthStart, setVisibleMonthStart] = useState(() => new Date());
   const [selectedRange, setSelectedRange] = useState<DateRangeValue>({
     startDate: null,
     endDate: null,
   });
 
+  const visibleMonthEnd = addMonths(visibleMonthStart, 1);
+
+  const getRangeDayState = (date: Date) => ({
+    selected: isSameDay(date, selectedRange.startDate) || isSameDay(date, selectedRange.endDate),
+    inRange: isBetweenDays(date, selectedRange.startDate, selectedRange.endDate),
+    rangeStart: isSameDay(date, selectedRange.startDate),
+    rangeEnd: isSameDay(date, selectedRange.endDate),
+  });
+
+  const selectRangeDate = (date: Date) => setSelectedRange((currentRange) => selectDateRangeDate(currentRange, date));
+
   return (
     <div className="adp-picker">
-      <Calendar
-        month={visibleMonth}
-        onMonthChange={setVisibleMonth}
-        onDateSelect={(date) => setSelectedRange((currentRange) => selectDateRangeDate(currentRange, date))}
-        getDayState={(date) => ({
-          selected: isSameDay(date, selectedRange.startDate) || isSameDay(date, selectedRange.endDate),
-          inRange: isBetweenDays(date, selectedRange.startDate, selectedRange.endDate),
-          rangeStart: isSameDay(date, selectedRange.startDate),
-          rangeEnd: isSameDay(date, selectedRange.endDate),
-        })}
-      />
+      <div className="adp-range-calendars">
+        <button
+          type="button"
+          className="adp-nav-button adp-range-nav-button"
+          onClick={() => setVisibleMonthStart((currentMonth) => addMonths(currentMonth, -1))}
+          aria-label="Previous month"
+        >
+          ‹
+        </button>
+        <Calendar
+          month={visibleMonthStart}
+          onMonthChange={setVisibleMonthStart}
+          onDateSelect={selectRangeDate}
+          getDayState={getRangeDayState}
+          showNavigation={false}
+        />
+        <Calendar
+          month={visibleMonthEnd}
+          onMonthChange={setVisibleMonthStart}
+          onDateSelect={selectRangeDate}
+          getDayState={getRangeDayState}
+          showNavigation={false}
+        />
+        <button
+          type="button"
+          className="adp-nav-button adp-range-nav-button"
+          onClick={() => setVisibleMonthStart((currentMonth) => addMonths(currentMonth, 1))}
+          aria-label="Next month"
+        >
+          ›
+        </button>
+      </div>
       <div className="adp-selection-label">
         Selected range: {formatInputDate(selectedRange.startDate) || 'Start'} → {formatInputDate(selectedRange.endDate) || 'End'}
       </div>
