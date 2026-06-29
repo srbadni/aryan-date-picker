@@ -67,15 +67,6 @@ export function DateRangePicker({ value, defaultValue = null, onChange, renderDa
   return (
     <div style={{direction: adapter.direction}} className="adp-picker">
       <div className="adp-range-calendars adp-range-calendars-desktop">
-        <button
-          type="button"
-          className="adp-nav-button adp-range-nav-button"
-          onClick={() => canNavigateDesktopPrev && setConstrainedVisibleMonthStart(adapter.addMonths(constrainedVisibleMonthStart, -1), 2)}
-          disabled={!canNavigateDesktopPrev}
-          aria-label="Previous month"
-        >
-          ‹
-        </button>
         <div className="adp-range-calendar-surface">
           <Calendar
             month={desktopVisibleMonths[0]}
@@ -85,6 +76,17 @@ export function DateRangePicker({ value, defaultValue = null, onChange, renderDa
             showNavigation={false}
             isDateDisabled={(date) => adapter.isDateDisabled(date, minDate, maxDate)}
             renderDay={renderDay}
+            headerStart={(
+              <button
+                type="button"
+                className="adp-nav-button adp-range-nav-button"
+                onClick={() => canNavigateDesktopPrev && setConstrainedVisibleMonthStart(adapter.addMonths(constrainedVisibleMonthStart, -1), 2)}
+                disabled={!canNavigateDesktopPrev}
+                aria-label="Previous month"
+              >
+                ‹
+              </button>
+            )}
           />
           <Calendar
             month={desktopVisibleMonths[1]}
@@ -94,17 +96,19 @@ export function DateRangePicker({ value, defaultValue = null, onChange, renderDa
             showNavigation={false}
             isDateDisabled={(date) => adapter.isDateDisabled(date, minDate, maxDate)}
             renderDay={renderDay}
+            headerEnd={(
+              <button
+                type="button"
+                className="adp-nav-button adp-range-nav-button"
+                onClick={() => canNavigateDesktopNext && setConstrainedVisibleMonthStart(adapter.addMonths(constrainedVisibleMonthStart, 1), 2)}
+                disabled={!canNavigateDesktopNext}
+                aria-label="Next month"
+              >
+                ›
+              </button>
+            )}
           />
         </div>
-        <button
-          type="button"
-          className="adp-nav-button adp-range-nav-button"
-          onClick={() => canNavigateDesktopNext && setConstrainedVisibleMonthStart(adapter.addMonths(constrainedVisibleMonthStart, 1), 2)}
-          disabled={!canNavigateDesktopNext}
-          aria-label="Next month"
-        >
-          ›
-        </button>
       </div>
       <div className="adp-range-calendars-mobile">
         {mobileVisibleMonths.map((month) => (

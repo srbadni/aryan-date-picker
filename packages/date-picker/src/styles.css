@@ -24,18 +24,26 @@
 }
 
 .adp-calendar-header {
-  display: flex;
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) 2rem;
   align-items: center;
-  justify-content: space-between;
   gap: 0.5rem;
 }
 
 .adp-calendar-header-centered {
+  display: flex;
   justify-content: center;
 }
 
+.adp-calendar-header-spacer {
+  width: 2rem;
+  height: 2rem;
+}
+
 .adp-month-label {
+  min-width: 0;
   font-weight: 600;
+  text-align: center;
 }
 
 .adp-nav-button,

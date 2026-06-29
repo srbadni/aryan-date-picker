@@ -39,6 +39,8 @@ type CalendarProps = {
   canNavigatePrev?: boolean;
   canNavigateNext?: boolean;
   renderDay?: RenderCalendarDay;
+  headerStart?: ReactNode;
+  headerEnd?: ReactNode;
 };
 
 type DayCellProps = {
@@ -69,7 +71,7 @@ const DayCell = memo(function DayCell({ dayProps, className, renderDay }: DayCel
   );
 });
 
-export function Calendar({ month, onMonthChange, onDateSelect, getDayState, showNavigation = true, isDateDisabled, canNavigatePrev = true, canNavigateNext = true, renderDay }: CalendarProps) {
+export function Calendar({ month, onMonthChange, onDateSelect, getDayState, showNavigation = true, isDateDisabled, canNavigatePrev = true, canNavigateNext = true, renderDay, headerStart, headerEnd }: CalendarProps) {
   const adapter = useCalendarAdapter();
   const days = adapter.createCalendarMonth(month);
   const weekdayLabels = adapter.getWeekdayLabels();
@@ -77,7 +79,7 @@ export function Calendar({ month, onMonthChange, onDateSelect, getDayState, show
 
   return (
     <div className="adp-date-picker" dir={adapter.direction}>
-      <div className={`adp-calendar-header${showNavigation ? '' : ' adp-calendar-header-centered'}`}>
+      <div className={`adp-calendar-header${showNavigation || headerStart || headerEnd ? '' : ' adp-calendar-header-centered'}`}>
         {showNavigation ? (
           <button
             type="button"
@@ -88,7 +90,7 @@ export function Calendar({ month, onMonthChange, onDateSelect, getDayState, show
           >
             ‹
           </button>
-        ) : null}
+        ) : headerStart ?? <span className="adp-calendar-header-spacer" aria-hidden="true" />}
         <div className="adp-month-label">{adapter.formatMonthLabel(month)}</div>
         {showNavigation ? (
           <button
@@ -100,7 +102,7 @@ export function Calendar({ month, onMonthChange, onDateSelect, getDayState, show
           >
             ›
           </button>
-        ) : null}
+        ) : headerEnd ?? <span className="adp-calendar-header-spacer" aria-hidden="true" />}
       </div>
 
       <div className="adp-calendar-grid adp-weekdays">
