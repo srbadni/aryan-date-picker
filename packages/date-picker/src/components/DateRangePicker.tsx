@@ -13,6 +13,7 @@ export function DateRangePicker() {
   });
 
   const visibleMonthEnd = addMonths(visibleMonthStart, 1);
+  const mobileVisibleMonths = Array.from({ length: 9 }, (_, monthOffset) => addMonths(visibleMonthStart, monthOffset));
 
   const getRangeDayState = (date: Date) => ({
     selected: isSameDay(date, selectedRange.startDate) || isSameDay(date, selectedRange.endDate),
@@ -25,7 +26,7 @@ export function DateRangePicker() {
 
   return (
     <div className="adp-picker">
-      <div className="adp-range-calendars">
+      <div className="adp-range-calendars adp-range-calendars-desktop">
         <button
           type="button"
           className="adp-nav-button adp-range-nav-button"
@@ -56,6 +57,18 @@ export function DateRangePicker() {
         >
           ›
         </button>
+      </div>
+      <div className="adp-range-calendars-mobile">
+        {mobileVisibleMonths.map((month) => (
+          <Calendar
+            key={month.toISOString()}
+            month={month}
+            onMonthChange={setVisibleMonthStart}
+            onDateSelect={selectRangeDate}
+            getDayState={getRangeDayState}
+            showNavigation={false}
+          />
+        ))}
       </div>
       <div className="adp-selection-label">
         Selected range: {formatInputDate(selectedRange.startDate) || 'Start'} → {formatInputDate(selectedRange.endDate) || 'End'}
