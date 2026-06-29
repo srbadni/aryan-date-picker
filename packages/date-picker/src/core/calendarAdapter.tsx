@@ -27,6 +27,10 @@ export type CalendarAdapter = {
   getWeekdayLabels: () => string[];
   createCalendarMonth: (month: Date) => CalendarDay[];
   createMonthSequence: (startMonth: Date, count: number) => Date[];
+  isDateDisabled: (date: Date, minDate?: Date | null, maxDate?: Date | null) => boolean;
+  canNavigateToMonth: (month: Date, visibleMonthCount?: number, minDate?: Date | null, maxDate?: Date | null) => boolean;
+  canNavigateMonth: (month: Date, amount: number, visibleMonthCount?: number, minDate?: Date | null, maxDate?: Date | null) => boolean;
+  constrainMonth: (month: Date, visibleMonthCount?: number, minDate?: Date | null, maxDate?: Date | null) => Date;
   parseDate: (value: string) => Date | null;
 };
 
@@ -141,6 +145,41 @@ export function createGregorianCalendarAdapter(options: GregorianCalendarAdapter
       });
     },
     createMonthSequence: (startMonth, count) => Array.from({ length: count }, (_, monthOffset) => adapter.addMonths(startMonth, monthOffset)),
+    isDateDisabled: (date, minDate, maxDate) => {
+      const day = adapter.startOfDay(date);
+
+      return Boolean(
+        (minDate && adapter.isBeforeDay(day, minDate)) ||
+        (maxDate && adapter.isBeforeDay(maxDate, day))
+      );
+    },
+    canNavigateToMonth: (month, visibleMonthCount = 1, minDate, maxDate) => {
+      const startMonth = adapter.startOfMonth(month);
+      const endMonth = adapter.endOfMonth(adapter.addMonths(startMonth, Math.max(visibleMonthCount - 1, 0)));
+
+      return Boolean(
+        (!minDate || !adapter.isBeforeDay(endMonth, minDate)) &&
+        (!maxDate || !adapter.isBeforeDay(maxDate, startMonth))
+      );
+    },
+    canNavigateMonth: (month, amount, visibleMonthCount = 1, minDate, maxDate) => (
+      adapter.canNavigateToMonth(adapter.addMonths(month, amount), visibleMonthCount, minDate, maxDate)
+    ),
+    constrainMonth: (month, visibleMonthCount = 1, minDate, maxDate) => {
+      if (adapter.canNavigateToMonth(month, visibleMonthCount, minDate, maxDate)) {
+        return month;
+      }
+
+      if (minDate && adapter.isBeforeDay(adapter.endOfMonth(adapter.addMonths(month, Math.max(visibleMonthCount - 1, 0))), minDate)) {
+        return adapter.startOfMonth(minDate);
+      }
+
+      if (maxDate && adapter.isBeforeDay(maxDate, adapter.startOfMonth(month))) {
+        return adapter.startOfMonth(maxDate);
+      }
+
+      return month;
+    },
     parseDate: (value) => {
       const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
       if (!match) {
