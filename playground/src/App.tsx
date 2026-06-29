@@ -1,6 +1,6 @@
-import { DatePicker } from 'aryan-date-picker';
+import { DateRangePicker } from 'aryan-date-picker';
 import 'aryan-date-picker/styles.css';
 
 export function App() {
-  return <DatePicker />;
+  return <DateRangePicker />;
 }
