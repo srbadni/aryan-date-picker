@@ -1,6 +1,6 @@
 # Aryan Date Picker
 
-A lightweight React date picker component library.
+A lightweight React date picker component library with calendar-aware localization adapters.
 
 ## Installation
 
@@ -8,7 +8,7 @@ A lightweight React date picker component library.
 pnpm add aryan-date-picker
 ```
 
-## Usage
+## Basic usage
 
 ```tsx
 import { DatePicker } from 'aryan-date-picker';
@@ -16,6 +16,124 @@ import 'aryan-date-picker/styles.css';
 
 export function App() {
   return <DatePicker />;
+}
+```
+
+## Why the localization layer exists
+
+Date pickers need more than translated labels. Different calendars can have different years, month boundaries, month lengths, leap-year rules, weekday ordering, formatting, navigation behavior, and layout direction. Aryan Date Picker keeps those responsibilities behind a `CalendarAdapter` so `DatePicker`, `DateRangePicker`, and `Calendar` can stay calendar-agnostic.
+
+The public value model remains standard JavaScript `Date`. Adapters interpret and render those `Date` instances in a calendar system, but consumers continue passing and receiving `Date` objects without a breaking API change.
+
+## LocalizationProvider
+
+`LocalizationProvider` places a calendar adapter in React context. Components below the provider use that adapter for formatting, month grids, navigation, comparisons, and direction.
+
+```tsx
+import {
+  DatePicker,
+  LocalizationProvider,
+  createGregorianCalendarAdapter,
+} from 'aryan-date-picker';
+
+const gregorianAdapter = createGregorianCalendarAdapter({ locale: 'en-US' });
+
+export function GregorianExample() {
+  return (
+    <LocalizationProvider adapter={gregorianAdapter}>
+      <DatePicker />
+    </LocalizationProvider>
+  );
+}
+```
+
+If no adapter is provided, the library uses the default Gregorian adapter.
+
+## Switching calendars
+
+Switch calendars by swapping the adapter; the picker values remain JavaScript `Date` instances.
+
+```tsx
+import {
+  DatePicker,
+  DateRangePicker,
+  LocalizationProvider,
+  createGregorianCalendarAdapter,
+  jalaliCalendarAdapter,
+} from 'aryan-date-picker';
+
+const gregorianAdapter = createGregorianCalendarAdapter({ locale: 'en-US' });
+
+export function CalendarSwitchingExample() {
+  return (
+    <>
+      <LocalizationProvider adapter={gregorianAdapter}>
+        <DatePicker />
+        <DateRangePicker />
+      </LocalizationProvider>
+
+      <LocalizationProvider adapter={jalaliCalendarAdapter}>
+        <DatePicker />
+        <DateRangePicker />
+      </LocalizationProvider>
+    </>
+  );
+}
+```
+
+## Jalali calendar
+
+The Jalali adapter renders actual Jalali calendar structure: Persian month names, weekday labels, Jalali month grids, Jalali month arithmetic, start/end of month, formatting, and leap-year-aware Esfand length. It exposes `direction: 'rtl'`, so existing direction support is applied automatically.
+
+```tsx
+import { DatePicker, LocalizationProvider, createJalaliCalendarAdapter } from 'aryan-date-picker';
+
+const jalaliAdapter = createJalaliCalendarAdapter();
+
+export function JalaliExample() {
+  return (
+    <LocalizationProvider adapter={jalaliAdapter}>
+      <DatePicker />
+    </LocalizationProvider>
+  );
+}
+```
+
+Parsing and labels use Jalali dates, but selected values are still JavaScript `Date` objects:
+
+```tsx
+const adapter = createJalaliCalendarAdapter();
+const date: Date | null = adapter.parseDate('1403-12-30');
+```
+
+## Building custom adapters
+
+Implement the `CalendarAdapter` interface and pass it to `LocalizationProvider`.
+
+A custom adapter owns:
+
+- calendar interpretation of JavaScript `Date` values
+- month names and weekday labels
+- month grid generation
+- `startOfMonth`, `endOfMonth`, and `addMonths`
+- day/month comparisons
+- date formatting and parsing
+- layout direction (`'ltr'` or `'rtl'`)
+
+```tsx
+import type { CalendarAdapter } from 'aryan-date-picker';
+import { LocalizationProvider, DatePicker } from 'aryan-date-picker';
+
+const customAdapter: CalendarAdapter = {
+  // Implement the full adapter contract for your calendar system.
+};
+
+export function CustomCalendarExample() {
+  return (
+    <LocalizationProvider adapter={customAdapter}>
+      <DatePicker />
+    </LocalizationProvider>
+  );
 }
 ```
 
