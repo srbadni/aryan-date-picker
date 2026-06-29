@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Calendar } from './Calendar';
+import { Calendar, type RenderCalendarDay } from './Calendar';
 import { useCalendarAdapter } from '../core/calendarAdapter';
 import { selectSingleDate } from '../core/selection';
 import '../styles.css';
@@ -8,9 +8,10 @@ export type DatePickerProps = {
   value?: Date | null;
   defaultValue?: Date | null;
   onChange?: (date: Date | null) => void;
+  renderDay?: RenderCalendarDay;
 };
 
-export function DatePicker({ value, defaultValue = null, onChange }: DatePickerProps = {}) {
+export function DatePicker({ value, defaultValue = null, onChange, renderDay }: DatePickerProps = {}) {
   const adapter = useCalendarAdapter();
   const [visibleMonth, setVisibleMonth] = useState(() => value ?? defaultValue ?? adapter.today());
   const [uncontrolledSelectedDate, setUncontrolledSelectedDate] = useState<Date | null>(defaultValue);
@@ -34,6 +35,7 @@ export function DatePicker({ value, defaultValue = null, onChange }: DatePickerP
         onMonthChange={setVisibleMonth}
         onDateSelect={selectDate}
         getDayState={(date) => ({ selected: adapter.isSameDay(date, selectedDate) })}
+        renderDay={renderDay}
       />
       <div className="adp-selection-label">Selected date: {adapter.formatInputDate(selectedDate) || 'None'}</div>
     </div>
