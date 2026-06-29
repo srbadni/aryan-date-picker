@@ -112,6 +112,9 @@
 }
 
 .adp-day {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 2rem;
   height: 2rem;
   border-radius: 999px;
@@ -169,7 +172,8 @@
   .adp-day {
     width: 100%;
     min-width: 0;
-    height: 2.5rem;
+    height: auto;
+    aspect-ratio: 1;
   }
 
   .adp-range-calendars-desktop {
