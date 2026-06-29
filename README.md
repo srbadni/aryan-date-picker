@@ -51,6 +51,35 @@ For lightweight usage, omit `value` and optionally provide `defaultValue` to let
 <DateRangePicker defaultValue={{ startDate: new Date(), endDate: null }} />
 ```
 
+## Date constraints
+
+Use `minDate` and `maxDate` on either picker to limit selectable dates and calendar navigation. Dates outside the range are rendered as disabled, cannot be selected, and navigation arrows stop at the first/last month that can contain valid dates.
+
+```tsx
+const minDate = new Date(2026, 6, 10);
+const maxDate = new Date(2026, 8, 20);
+
+<DatePicker minDate={minDate} maxDate={maxDate} />
+<DateRangePicker minDate={minDate} maxDate={maxDate} />
+```
+
+The constraint logic is adapter-driven, so custom calendar adapters decide whether a date is disabled and whether a month transition is allowed. If `minDate` or `maxDate` falls inside the visible month, only the out-of-range days in that month are disabled.
+
+## DateRangePicker view modes
+
+`DateRangePicker` supports two mobile presentation strategies through `viewMode`:
+
+- `"infinite"` (default) keeps the existing mobile behavior by rendering a continuous multi-month stack.
+- `"single"` renders one mobile month at a time with previous/next arrow navigation.
+
+Desktop keeps the two-calendar range layout in both modes.
+
+```tsx
+<DateRangePicker viewMode="infinite" />
+<DateRangePicker viewMode="single" minDate={minDate} maxDate={maxDate} />
+```
+
+Both modes reuse the same adapter-based month generation and range selection logic, so `renderDay`, disabled days, and boundary-aware navigation behave consistently.
 
 ## Custom day rendering
 
@@ -180,6 +209,7 @@ A custom adapter owns:
 - `startOfMonth`, `endOfMonth`, and `addMonths`
 - day/month comparisons
 - date formatting and parsing
+- min/max constraint helpers for disabled days and allowed month navigation
 - layout direction (`'ltr'` or `'rtl'`)
 
 ```tsx

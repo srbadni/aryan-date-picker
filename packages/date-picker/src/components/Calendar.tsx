@@ -35,6 +35,9 @@ type CalendarProps = {
   onDateSelect: (date: Date) => void;
   getDayState: (date: Date) => CalendarDayState;
   showNavigation?: boolean;
+  isDateDisabled?: (date: Date) => boolean;
+  canNavigatePrev?: boolean;
+  canNavigateNext?: boolean;
   renderDay?: RenderCalendarDay;
 };
 
@@ -66,7 +69,7 @@ const DayCell = memo(function DayCell({ dayProps, className, renderDay }: DayCel
   );
 });
 
-export function Calendar({ month, onMonthChange, onDateSelect, getDayState, showNavigation = true, renderDay }: CalendarProps) {
+export function Calendar({ month, onMonthChange, onDateSelect, getDayState, showNavigation = true, isDateDisabled, canNavigatePrev = true, canNavigateNext = true, renderDay }: CalendarProps) {
   const adapter = useCalendarAdapter();
   const days = adapter.createCalendarMonth(month);
   const weekdayLabels = adapter.getWeekdayLabels();
@@ -76,13 +79,25 @@ export function Calendar({ month, onMonthChange, onDateSelect, getDayState, show
     <div className="adp-date-picker" dir={adapter.direction}>
       <div className={`adp-calendar-header${showNavigation ? '' : ' adp-calendar-header-centered'}`}>
         {showNavigation ? (
-          <button type="button" className="adp-nav-button" onClick={() => onMonthChange(adapter.addMonths(month, -1))} aria-label="Previous month">
+          <button
+            type="button"
+            className="adp-nav-button"
+            onClick={() => canNavigatePrev && onMonthChange(adapter.addMonths(month, -1))}
+            disabled={!canNavigatePrev}
+            aria-label="Previous month"
+          >
             ‹
           </button>
         ) : null}
         <div className="adp-month-label">{adapter.formatMonthLabel(month)}</div>
         {showNavigation ? (
-          <button type="button" className="adp-nav-button" onClick={() => onMonthChange(adapter.addMonths(month, 1))} aria-label="Next month">
+          <button
+            type="button"
+            className="adp-nav-button"
+            onClick={() => canNavigateNext && onMonthChange(adapter.addMonths(month, 1))}
+            disabled={!canNavigateNext}
+            aria-label="Next month"
+          >
             ›
           </button>
         ) : null}
@@ -98,10 +113,11 @@ export function Calendar({ month, onMonthChange, onDateSelect, getDayState, show
         {days.map((calendarDay) => {
           const isOutsideMonth = !calendarDay.isCurrentMonth;
           const dayState = isOutsideMonth ? {} : getDayState(calendarDay.date);
-          const isDisabled = isOutsideMonth;
+          const isDisabled = isOutsideMonth || Boolean(isDateDisabled?.(calendarDay.date));
           const className = [
             'adp-day',
             isOutsideMonth ? 'adp-day-placeholder' : '',
+            isDisabled && !isOutsideMonth ? 'adp-day-disabled' : '',
             dayState.selected ? 'adp-day-selected' : '',
             dayState.inRange ? 'adp-day-in-range' : '',
             dayState.rangeStart ? 'adp-day-range-start' : '',
