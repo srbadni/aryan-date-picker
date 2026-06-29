@@ -51,6 +51,36 @@ For lightweight usage, omit `value` and optionally provide `defaultValue` to let
 <DateRangePicker defaultValue={{ startDate: new Date(), endDate: null }} />
 ```
 
+
+## Custom day rendering
+
+Use `renderDay` on either `DatePicker` or `DateRangePicker` to customize the visual contents of each calendar day. The picker still owns selection, range calculation, disabled state, focus behavior, and accessibility attributes; your renderer receives the already-computed state and returns only the content to display inside the safe day-cell container.
+
+```tsx
+import { DatePicker, type CalendarRenderDayProps } from 'aryan-date-picker';
+
+const prices: Record<string, number> = {
+  '2026-07-14': 129,
+};
+
+function BookingDay(day: CalendarRenderDayProps) {
+  const price = prices[day.date.toISOString().slice(0, 10)];
+
+  return (
+    <span className={day.isSelected ? 'selected-booking-day' : undefined}>
+      <span>{day.label}</span>
+      {price ? <small>${price}</small> : null}
+    </span>
+  );
+}
+
+export function BookingCalendar() {
+  return <DatePicker renderDay={BookingDay} />;
+}
+```
+
+The same prop is available on `DateRangePicker`, including both desktop calendars and the mobile multi-month layout.
+
 ## Why the localization layer exists
 
 Date pickers need more than translated labels. Different calendars can have different years, month boundaries, month lengths, leap-year rules, weekday ordering, formatting, navigation behavior, and layout direction. Aryan Date Picker keeps those responsibilities behind a `CalendarAdapter` so `DatePicker`, `DateRangePicker`, and `Calendar` can stay calendar-agnostic.

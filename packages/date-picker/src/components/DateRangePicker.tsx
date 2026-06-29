@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Calendar } from './Calendar';
+import { Calendar, type RenderCalendarDay } from './Calendar';
 import { useCalendarAdapter } from '../core/calendarAdapter';
 import { DateRangeValue, selectDateRangeDate } from '../core/selection';
 import '../styles.css';
@@ -8,6 +8,7 @@ export type DateRangePickerProps = {
   value?: DateRangeValue | null;
   defaultValue?: DateRangeValue | null;
   onChange?: (range: DateRangeValue | null) => void;
+  renderDay?: RenderCalendarDay;
 };
 
 const emptyRange: DateRangeValue = {
@@ -19,7 +20,7 @@ function normalizeRange(range: DateRangeValue | null | undefined): DateRangeValu
   return range ?? emptyRange;
 }
 
-export function DateRangePicker({ value, defaultValue = null, onChange }: DateRangePickerProps = {}) {
+export function DateRangePicker({ value, defaultValue = null, onChange, renderDay }: DateRangePickerProps = {}) {
   const adapter = useCalendarAdapter();
   const initialRange = normalizeRange(value ?? defaultValue);
   const [visibleMonthStart, setVisibleMonthStart] = useState(() => initialRange.startDate ?? adapter.today());
@@ -65,6 +66,7 @@ export function DateRangePicker({ value, defaultValue = null, onChange }: DateRa
             onDateSelect={selectRangeDate}
             getDayState={getRangeDayState}
             showNavigation={false}
+            renderDay={renderDay}
           />
           <Calendar
             month={desktopVisibleMonths[1]}
@@ -72,6 +74,7 @@ export function DateRangePicker({ value, defaultValue = null, onChange }: DateRa
             onDateSelect={selectRangeDate}
             getDayState={getRangeDayState}
             showNavigation={false}
+            renderDay={renderDay}
           />
         </div>
         <button
@@ -92,6 +95,7 @@ export function DateRangePicker({ value, defaultValue = null, onChange }: DateRa
             onDateSelect={selectRangeDate}
             getDayState={getRangeDayState}
             showNavigation={false}
+            renderDay={renderDay}
           />
         ))}
       </div>
