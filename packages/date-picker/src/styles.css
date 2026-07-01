@@ -24,18 +24,26 @@
 }
 
 .adp-calendar-header {
-  display: flex;
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) 2rem;
   align-items: center;
-  justify-content: space-between;
   gap: 0.5rem;
 }
 
 .adp-calendar-header-centered {
+  display: flex;
   justify-content: center;
 }
 
+.adp-calendar-header-spacer {
+  width: 2rem;
+  height: 2rem;
+}
+
 .adp-month-label {
+  min-width: 0;
   font-weight: 600;
+  text-align: center;
 }
 
 .adp-nav-button,
@@ -83,9 +91,15 @@
   flex: 0 0 auto;
 }
 
-.adp-nav-button:hover,
-.adp-day:not(.adp-day-placeholder):hover {
+.adp-nav-button:not(:disabled):hover,
+.adp-day:not(.adp-day-placeholder):not(:disabled):hover {
   background: #e5e7eb;
+}
+
+.adp-nav-button:disabled,
+.adp-day:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .adp-calendar-grid {
@@ -106,8 +120,13 @@
 }
 
 .adp-day {
-  min-width: 2rem;
-  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  aspect-ratio: 1;
   border-radius: 999px;
   background: transparent;
   color: #111827;
@@ -116,6 +135,10 @@
 .adp-day-placeholder {
   cursor: default;
   pointer-events: none;
+}
+
+.adp-day-disabled {
+  color: #9ca3af;
 }
 
 .adp-day-in-range {
@@ -154,12 +177,6 @@
     width: 100%;
     padding: 0.5rem;
     border-radius: 0.5rem;
-  }
-
-  .adp-day {
-    width: 100%;
-    min-width: 0;
-    height: 2.5rem;
   }
 
   .adp-range-calendars-desktop {

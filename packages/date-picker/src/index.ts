@@ -1,5 +1,6 @@
 export { DatePicker } from './components/DatePicker';
 export type { DatePickerProps } from './components/DatePicker';
+export type { CalendarDayState, CalendarRenderDayProps, RenderCalendarDay } from './components/Calendar';
 export { DateRangePicker } from './components/DateRangePicker';
 export type { DateRangePickerProps } from './components/DateRangePicker';
 export { LocalizationProvider, createGregorianCalendarAdapter, defaultCalendarAdapter, useCalendarAdapter } from './core/calendarAdapter';
