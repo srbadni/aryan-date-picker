@@ -228,23 +228,3 @@ export function CustomCalendarExample() {
   );
 }
 ```
-
-## Workspace
-
-This repository is a minimal pnpm workspace:
-
-- `packages/date-picker` contains the publishable library.
-- `playground` contains a local Vite + React + TypeScript development app.
-
-## Development
-
-```sh
-pnpm install
-pnpm dev
-```
-
-## Build
-
-```sh
-pnpm build
-```

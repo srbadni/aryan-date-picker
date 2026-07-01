@@ -4,6 +4,9 @@
   "scripts": {
     "dev": "pnpm --filter playground dev",
     "build": "pnpm --filter aryan-date-picker build",
-    "clean": "pnpm --filter aryan-date-picker clean && pnpm --filter playground clean"
+    "build:all": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "clean": "pnpm --filter aryan-date-picker clean && pnpm --filter playground clean",
+    "pack:date-picker": "pnpm --filter aryan-date-picker pack"
   }
 }

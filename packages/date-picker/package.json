@@ -1,7 +1,7 @@
 {
   "name": "aryan-date-picker",
   "version": "0.1.2",
-  "description": "A lightweight React date picker component library.",
+  "description": "A lightweight React date picker component library with Gregorian and Jalali calendar adapters.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -34,13 +34,16 @@
     "access": "public"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "sideEffects": [
     "*.css"
   ],
   "scripts": {
     "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
     "build": "tsup",
     "clean": "rm -rf dist"
   },
