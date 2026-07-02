@@ -1,6 +1,6 @@
 # Aryan Date Picker
 
-A lightweight React date picker component library with calendar-aware localization adapters.
+A business-ready React date picker with Gregorian and Jalali calendar adapters. It ships as a small component library, keeps values as standard JavaScript `Date` objects, and now includes the product pieces most apps need: input fields, popovers, clear actions, validation copy, min/max rules, RTL support, and inline calendar mode.
 
 ## Installation
 
@@ -8,52 +8,163 @@ A lightweight React date picker component library with calendar-aware localizati
 pnpm add aryan-date-picker
 ```
 
-## Basic usage
-
-```tsx
-import { useState } from 'react';
-import { DatePicker } from 'aryan-date-picker';
-import 'aryan-date-picker/styles.css';
-
-export function App() {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-
-  return <DatePicker value={selectedDate} onChange={setSelectedDate} />;
-}
+```sh
+npm install aryan-date-picker
 ```
 
+Import the stylesheet once in your app:
 
-## Controlled and uncontrolled values
+```tsx
+import 'aryan-date-picker/styles.css';
+```
 
-`DatePicker` and `DateRangePicker` support the standard React controlled component pattern. Pass `value` and `onChange` when the selected value should be owned by your application state.
+## Basic usage
+
+`DatePicker` and `DateRangePicker` render as form fields with popover calendars by default.
 
 ```tsx
 import { useState } from 'react';
 import { DatePicker, DateRangePicker, type DateRangeValue } from 'aryan-date-picker';
+import 'aryan-date-picker/styles.css';
 
-export function ControlledExample() {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [selectedRange, setSelectedRange] = useState<DateRangeValue | null>(null);
+export function BookingForm() {
+  const [checkIn, setCheckIn] = useState<Date | null>(null);
+  const [stay, setStay] = useState<DateRangeValue | null>(null);
 
   return (
-    <>
-      <DatePicker value={selectedDate} onChange={setSelectedDate} />
-      <DateRangePicker value={selectedRange} onChange={setSelectedRange} />
-    </>
+    <form>
+      <DatePicker
+        label="Check-in"
+        name="checkIn"
+        value={checkIn}
+        onChange={setCheckIn}
+        minDate={new Date()}
+        helperText="Pick the first available night."
+      />
+
+      <DateRangePicker
+        label="Stay dates"
+        name="stayDates"
+        startName="stayStart"
+        endName="stayEnd"
+        value={stay}
+        onChange={setStay}
+        minDate={new Date()}
+      />
+    </form>
   );
 }
 ```
 
-For lightweight usage, omit `value` and optionally provide `defaultValue` to let the component manage its own selected value.
+Use `displayMode="inline"` when the calendar should always be visible.
 
 ```tsx
+<DatePicker displayMode="inline" />
+<DateRangePicker displayMode="inline" numberOfMonths={2} />
+```
+
+## Public API
+
+```tsx
+import {
+  DatePicker,
+  DateRangePicker,
+  LocalizationProvider,
+  createGregorianCalendarAdapter,
+  createJalaliCalendarAdapter,
+  defaultCalendarAdapter,
+  jalaliCalendarAdapter,
+  useCalendarAdapter,
+  type CalendarAdapter,
+  type CalendarDay,
+  type CalendarRenderDayProps,
+  type DatePickerProps,
+  type DateRangePickerProps,
+  type DateRangeValue,
+  type GregorianCalendarAdapterOptions,
+  type JalaliCalendarAdapterOptions,
+  type LayoutDirection,
+  type LocalizationProviderProps,
+  type PickerDisplayMode,
+  type RenderCalendarDay,
+} from 'aryan-date-picker';
+```
+
+The low-level `Calendar` component remains internal. Consumers should import from the package root.
+
+## Component props
+
+### `DatePickerProps`
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `value` | `Date \| null` | Controlled selected date. |
+| `defaultValue` | `Date \| null` | Initial date for uncontrolled usage. |
+| `onChange` | `(date: Date \| null) => void` | Called when the selected date changes or is cleared. |
+| `displayMode` | `'popover' \| 'inline'` | Field + popover by default; inline keeps the calendar visible. |
+| `open` / `defaultOpen` | `boolean` | Controlled or uncontrolled popover state. |
+| `onOpenChange` | `(open: boolean) => void` | Called when popover visibility changes. |
+| `closeOnSelect` | `boolean` | Closes the popover after selection. Defaults to `true`. |
+| `clearable` | `boolean` | Shows a clear action when a value exists. Defaults to `true`. |
+| `disabled` / `readOnly` / `required` | `boolean` | Standard form states. |
+| `id` / `name` | `string` | Form field identifiers. |
+| `label` | `ReactNode` | Visible field label. |
+| `helperText` | `ReactNode` | Supporting text below the input. |
+| `errorText` | `ReactNode` | Error text below the input and `aria-invalid`. |
+| `placeholder` | `string` | Empty input placeholder. |
+| `calendarLabel` | `string` | Accessible label for the calendar dialog/grid. |
+| `formatValue` | `(date, adapter) => string` | Custom field display formatter. |
+| `inputProps` | `InputHTMLAttributes<HTMLInputElement>` | Additional input attributes, excluding controlled internals. |
+| `renderDay` | `RenderCalendarDay` | Custom renderer for day-cell contents. |
+| `minDate` / `maxDate` | `Date` | Selectable date and navigation boundaries. |
+
+### `DateRangePickerProps`
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `value` | `DateRangeValue \| null` | Controlled selected range. |
+| `defaultValue` | `DateRangeValue \| null` | Initial range for uncontrolled usage. |
+| `onChange` | `(range: DateRangeValue \| null) => void` | Called when the range changes or is cleared. |
+| `displayMode` | `'popover' \| 'inline'` | Field + popover by default; inline keeps calendars visible. |
+| `open` / `defaultOpen` | `boolean` | Controlled or uncontrolled popover state. |
+| `onOpenChange` | `(open: boolean) => void` | Called when popover visibility changes. |
+| `closeOnSelect` | `boolean` | Closes the popover once start and end are selected. Defaults to `true`. |
+| `name` | `string` | Combined visible field name. |
+| `startName` / `endName` | `string` | Optional hidden inputs for start and end values. |
+| `numberOfMonths` | `number` | Desktop month count. Defaults to `2`. |
+| `viewMode` | `'single' \| 'infinite'` | Mobile strategy. Defaults to `'single'`. |
+| `mobileMonthCount` | `number` | Month count for mobile infinite mode. Defaults to `6`. |
+| `formatValue` | `(range, adapter) => string` | Custom field display formatter. |
+| `clearable`, `disabled`, `readOnly`, `required`, `label`, `helperText`, `errorText`, `placeholder`, `calendarLabel`, `inputProps`, `renderDay`, `minDate`, `maxDate` | See `DatePickerProps` | Same behavior for range selection. |
+
+```ts
+export type DateRangeValue = {
+  startDate: Date | null;
+  endDate: Date | null;
+};
+```
+
+## Controlled and uncontrolled values
+
+Both pickers support standard React controlled and uncontrolled patterns.
+
+```tsx
+<DatePicker value={selectedDate} onChange={setSelectedDate} />
 <DatePicker defaultValue={new Date()} />
+
+<DateRangePicker value={selectedRange} onChange={setSelectedRange} />
 <DateRangePicker defaultValue={{ startDate: new Date(), endDate: null }} />
+```
+
+Popover state can also be controlled when product flows need explicit control.
+
+```tsx
+<DatePicker open={isCalendarOpen} onOpenChange={setCalendarOpen} />
 ```
 
 ## Date constraints
 
-Use `minDate` and `maxDate` on either picker to limit selectable dates and calendar navigation. Dates outside the range are rendered as disabled, cannot be selected, and navigation arrows stop at the first/last month that can contain valid dates.
+Use `minDate` and `maxDate` to limit selectable dates and calendar navigation. Dates outside the range are rendered as disabled, cannot be selected, and navigation arrows stop at the first or last month that can contain valid dates.
 
 ```tsx
 const minDate = new Date(2026, 6, 10);
@@ -63,27 +174,13 @@ const maxDate = new Date(2026, 8, 20);
 <DateRangePicker minDate={minDate} maxDate={maxDate} />
 ```
 
-The constraint logic is adapter-driven, so custom calendar adapters decide whether a date is disabled and whether a month transition is allowed. If `minDate` or `maxDate` falls inside the visible month, only the out-of-range days in that month are disabled.
+## Keyboard and accessibility
 
-## DateRangePicker view modes
-
-`DateRangePicker` supports two mobile presentation strategies through `viewMode`:
-
-- `"infinite"` (default) keeps the existing mobile behavior by rendering a continuous multi-month stack.
-- `"single"` renders one mobile month at a time with previous/next arrow navigation.
-
-Desktop keeps the two-calendar range layout in both modes.
-
-```tsx
-<DateRangePicker viewMode="infinite" />
-<DateRangePicker viewMode="single" minDate={minDate} maxDate={maxDate} />
-```
-
-Both modes reuse the same adapter-based month generation and range selection logic, so `renderDay`, disabled days, and boundary-aware navigation behave consistently.
+Calendar grids use one active tabbable day. Arrow keys move by day or week, and Page Up/Page Down changes the visible month. Popovers close on outside click or Escape. Field labels, helper text, error text, `aria-invalid`, `aria-controls`, and `aria-expanded` are wired into the field shell.
 
 ## Custom day rendering
 
-Use `renderDay` on either `DatePicker` or `DateRangePicker` to customize the visual contents of each calendar day. The picker still owns selection, range calculation, disabled state, focus behavior, and accessibility attributes; your renderer receives the already-computed state and returns only the content to display inside the safe day-cell container.
+Use `renderDay` to customize each day while keeping selection, range calculation, disabled state, keyboard behavior, and accessibility attributes owned by the picker.
 
 ```tsx
 import { DatePicker, type CalendarRenderDayProps } from 'aryan-date-picker';
@@ -93,7 +190,8 @@ const prices: Record<string, number> = {
 };
 
 function BookingDay(day: CalendarRenderDayProps) {
-  const price = prices[day.date.toISOString().slice(0, 10)];
+  const key = `${day.date.getFullYear()}-${String(day.date.getMonth() + 1).padStart(2, '0')}-${String(day.date.getDate()).padStart(2, '0')}`;
+  const price = prices[key];
 
   return (
     <span className={day.isSelected ? 'selected-booking-day' : undefined}>
@@ -108,17 +206,9 @@ export function BookingCalendar() {
 }
 ```
 
-The same prop is available on `DateRangePicker`, including both desktop calendars and the mobile multi-month layout.
-
-## Why the localization layer exists
-
-Date pickers need more than translated labels. Different calendars can have different years, month boundaries, month lengths, leap-year rules, weekday ordering, formatting, navigation behavior, and layout direction. Aryan Date Picker keeps those responsibilities behind a `CalendarAdapter` so `DatePicker`, `DateRangePicker`, and `Calendar` can stay calendar-agnostic.
-
-The public value model remains standard JavaScript `Date`. Adapters interpret and render those `Date` instances in a calendar system, but consumers continue passing and receiving `Date` objects without a breaking API change.
-
 ## LocalizationProvider
 
-`LocalizationProvider` places a calendar adapter in React context. Components below the provider use that adapter for formatting, month grids, navigation, comparisons, and direction.
+`LocalizationProvider` places a calendar adapter in React context. Components below the provider use that adapter for formatting, parsing, month grids, navigation, comparisons, and direction.
 
 ```tsx
 import {
@@ -140,41 +230,9 @@ export function GregorianExample() {
 
 If no adapter is provided, the library uses the default Gregorian adapter.
 
-## Switching calendars
-
-Switch calendars by swapping the adapter; the picker values remain JavaScript `Date` instances.
-
-```tsx
-import {
-  DatePicker,
-  DateRangePicker,
-  LocalizationProvider,
-  createGregorianCalendarAdapter,
-  jalaliCalendarAdapter,
-} from 'aryan-date-picker';
-
-const gregorianAdapter = createGregorianCalendarAdapter({ locale: 'en-US' });
-
-export function CalendarSwitchingExample() {
-  return (
-    <>
-      <LocalizationProvider adapter={gregorianAdapter}>
-        <DatePicker />
-        <DateRangePicker />
-      </LocalizationProvider>
-
-      <LocalizationProvider adapter={jalaliCalendarAdapter}>
-        <DatePicker />
-        <DateRangePicker />
-      </LocalizationProvider>
-    </>
-  );
-}
-```
-
 ## Jalali calendar
 
-The Jalali adapter renders actual Jalali calendar structure: Persian month names, weekday labels, Jalali month grids, Jalali month arithmetic, start/end of month, formatting, and leap-year-aware Esfand length. It exposes `direction: 'rtl'`, so existing direction support is applied automatically.
+The Jalali adapter renders Persian month names, weekday labels, Jalali month grids, Jalali month arithmetic, parsing, and leap-year-aware Esfand length. It exposes `direction: 'rtl'`, so fields and popovers automatically flip direction.
 
 ```tsx
 import { DatePicker, LocalizationProvider, createJalaliCalendarAdapter } from 'aryan-date-picker';
@@ -184,7 +242,7 @@ const jalaliAdapter = createJalaliCalendarAdapter();
 export function JalaliExample() {
   return (
     <LocalizationProvider adapter={jalaliAdapter}>
-      <DatePicker />
+      <DatePicker label="تاریخ" placeholder="انتخاب تاریخ" />
     </LocalizationProvider>
   );
 }
@@ -199,25 +257,13 @@ const date: Date | null = adapter.parseDate('1403-12-30');
 
 ## Building custom adapters
 
-Implement the `CalendarAdapter` interface and pass it to `LocalizationProvider`.
-
-A custom adapter owns:
-
-- calendar interpretation of JavaScript `Date` values
-- month names and weekday labels
-- month grid generation
-- `startOfMonth`, `endOfMonth`, and `addMonths`
-- day/month comparisons
-- date formatting and parsing
-- min/max constraint helpers for disabled days and allowed month navigation
-- layout direction (`'ltr'` or `'rtl'`)
+Implement the `CalendarAdapter` interface and pass it to `LocalizationProvider`. A custom adapter owns calendar interpretation, month names, weekday labels, month grids, date math, comparisons, formatting, parsing, min/max helpers, and layout direction.
 
 ```tsx
-import type { CalendarAdapter } from 'aryan-date-picker';
-import { LocalizationProvider, DatePicker } from 'aryan-date-picker';
+import { LocalizationProvider, DatePicker, type CalendarAdapter } from 'aryan-date-picker';
 
 const customAdapter: CalendarAdapter = {
-  // Implement the full adapter contract for your calendar system.
+  // Implement the full adapter contract.
 };
 
 export function CustomCalendarExample() {
@@ -229,22 +275,9 @@ export function CustomCalendarExample() {
 }
 ```
 
-## Workspace
+## Migration notes for 0.2.0
 
-This repository is a minimal pnpm workspace:
-
-- `packages/date-picker` contains the publishable library.
-- `playground` contains a local Vite + React + TypeScript development app.
-
-## Development
-
-```sh
-pnpm install
-pnpm dev
-```
-
-## Build
-
-```sh
-pnpm build
-```
+- The default `displayMode` changed to `'popover'`, because the package is now positioned as a full date-picker field instead of only an inline calendar widget.
+- Existing always-visible calendars should pass `displayMode="inline"`.
+- `DateRangePicker` mobile default changed from long infinite scrolling to one month with navigation. Use `viewMode="infinite"` to restore the old multi-month stack.
+- `CalendarAdapter` now includes `addDays`, used for keyboard navigation.

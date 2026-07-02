@@ -9,8 +9,8 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      'aryan-date-picker/styles.css': path.resolve(__dirname, '../packages/date-picker/src/styles.css'),
-      'aryan-date-picker': path.resolve(__dirname, '../packages/date-picker/src/index.ts'),
+      'aryan-date-picker/styles.css': path.resolve(__dirname, '../../packages/date-picker/src/styles.css'),
+      'aryan-date-picker': path.resolve(__dirname, '../../packages/date-picker/src/index.ts'),
     },
   },
 });

@@ -2,8 +2,13 @@
   "name": "aryan-date-picker-workspace",
   "private": true,
   "scripts": {
-    "dev": "pnpm --filter playground dev",
+    "dev": "pnpm --filter @aryan-date-picker/playground dev",
     "build": "pnpm --filter aryan-date-picker build",
-    "clean": "pnpm --filter aryan-date-picker clean && pnpm --filter playground clean"
-  }
+    "build:playground": "pnpm --filter @aryan-date-picker/playground build",
+    "typecheck": "pnpm --filter aryan-date-picker typecheck && pnpm --filter @aryan-date-picker/playground typecheck",
+    "clean": "pnpm --filter aryan-date-picker clean && pnpm --filter @aryan-date-picker/playground clean",
+    "pack:package": "pnpm --filter aryan-date-picker pack",
+    "check": "pnpm typecheck && pnpm build && pnpm build:playground"
+  },
+  "packageManager": "pnpm@10.12.1"
 }

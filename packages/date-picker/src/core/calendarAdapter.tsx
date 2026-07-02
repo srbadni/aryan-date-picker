@@ -16,6 +16,7 @@ export type CalendarAdapter = {
   startOfMonth: (date: Date) => Date;
   endOfMonth: (date: Date) => Date;
   addMonths: (date: Date, amount: number) => Date;
+  addDays: (date: Date, amount: number) => Date;
   isBeforeDay: (first: Date, second: Date) => boolean;
   isSameDay: (first: Date | null, second: Date | null) => boolean;
   isSameMonth: (first: Date, second: Date) => boolean;
@@ -92,7 +93,17 @@ export function createGregorianCalendarAdapter(options: GregorianCalendarAdapter
     startOfDay,
     startOfMonth: (date) => new Date(date.getFullYear(), date.getMonth(), 1),
     endOfMonth: (date) => new Date(date.getFullYear(), date.getMonth() + 1, 0),
-    addMonths: (date, amount) => new Date(date.getFullYear(), date.getMonth() + amount, 1),
+    addMonths: (date, amount) => {
+      const targetMonth = new Date(date.getFullYear(), date.getMonth() + amount, 1);
+      const lastDayOfTargetMonth = new Date(targetMonth.getFullYear(), targetMonth.getMonth() + 1, 0).getDate();
+
+      return new Date(
+        targetMonth.getFullYear(),
+        targetMonth.getMonth(),
+        Math.min(date.getDate(), lastDayOfTargetMonth),
+      );
+    },
+    addDays: (date, amount) => new Date(date.getFullYear(), date.getMonth(), date.getDate() + amount),
     isBeforeDay: (first, second) => startOfDay(first).getTime() < startOfDay(second).getTime(),
     isSameDay: (first, second) => {
       if (!first || !second) {
@@ -144,7 +155,11 @@ export function createGregorianCalendarAdapter(options: GregorianCalendarAdapter
         };
       });
     },
-    createMonthSequence: (startMonth, count) => Array.from({ length: count }, (_, monthOffset) => adapter.addMonths(startMonth, monthOffset)),
+    createMonthSequence: (startMonth, count) => {
+      const safeCount = Math.max(0, Math.trunc(count));
+
+      return Array.from({ length: safeCount }, (_, monthOffset) => adapter.addMonths(startMonth, monthOffset));
+    },
     isDateDisabled: (date, minDate, maxDate) => {
       const day = adapter.startOfDay(date);
 
@@ -154,8 +169,9 @@ export function createGregorianCalendarAdapter(options: GregorianCalendarAdapter
       );
     },
     canNavigateToMonth: (month, visibleMonthCount = 1, minDate, maxDate) => {
+      const safeVisibleMonthCount = Math.max(1, Math.trunc(visibleMonthCount));
       const startMonth = adapter.startOfMonth(month);
-      const endMonth = adapter.endOfMonth(adapter.addMonths(startMonth, Math.max(visibleMonthCount - 1, 0)));
+      const endMonth = adapter.endOfMonth(adapter.addMonths(startMonth, safeVisibleMonthCount - 1));
 
       return Boolean(
         (!minDate || !adapter.isBeforeDay(endMonth, minDate)) &&
@@ -166,11 +182,13 @@ export function createGregorianCalendarAdapter(options: GregorianCalendarAdapter
       adapter.canNavigateToMonth(adapter.addMonths(month, amount), visibleMonthCount, minDate, maxDate)
     ),
     constrainMonth: (month, visibleMonthCount = 1, minDate, maxDate) => {
-      if (adapter.canNavigateToMonth(month, visibleMonthCount, minDate, maxDate)) {
+      const safeVisibleMonthCount = Math.max(1, Math.trunc(visibleMonthCount));
+
+      if (adapter.canNavigateToMonth(month, safeVisibleMonthCount, minDate, maxDate)) {
         return month;
       }
 
-      if (minDate && adapter.isBeforeDay(adapter.endOfMonth(adapter.addMonths(month, Math.max(visibleMonthCount - 1, 0))), minDate)) {
+      if (minDate && adapter.isBeforeDay(adapter.endOfMonth(adapter.addMonths(month, safeVisibleMonthCount - 1)), minDate)) {
         return adapter.startOfMonth(minDate);
       }
 
@@ -181,7 +199,7 @@ export function createGregorianCalendarAdapter(options: GregorianCalendarAdapter
       return month;
     },
     parseDate: (value) => {
-      const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+      const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());
       if (!match) {
         return null;
       }

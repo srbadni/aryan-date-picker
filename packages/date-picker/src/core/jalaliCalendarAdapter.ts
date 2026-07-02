@@ -242,6 +242,9 @@ export function createJalaliCalendarAdapter(
       return newJalaliDate(jy, jm, jd);
     },
 
+    addDays: (date, amount) =>
+        new Date(date.getFullYear(), date.getMonth(), date.getDate() + amount),
+
     isBeforeDay: (first, second) =>
         startOfDay(first).getTime() < startOfDay(second).getTime(),
 

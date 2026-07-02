@@ -4,13 +4,13 @@ export default defineConfig({
   entry: ['src/index.ts'],
   format: ['esm', 'cjs'],
   dts: true,
-  minify: true,
-  sourcemap: false,
-  splitting: false,
   clean: true,
+  sourcemap: true,
+  minify: false,
+  splitting: false,
   treeshake: true,
-  external: ['react', 'react-dom'],
-  outExtension({ format }) {
+  external: ['react', 'react-dom', 'react/jsx-runtime'],
+  outExtension({ format }: { format: 'esm' | 'cjs' }) {
     return {
       js: format === 'esm' ? '.mjs' : '.js',
     };

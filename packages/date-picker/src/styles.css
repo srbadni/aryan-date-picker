@@ -1,26 +1,180 @@
 .adp-picker,
 .adp-date-picker,
-.adp-date-picker * {
+.adp-date-picker *,
+.adp-field-root,
+.adp-field-root * {
   box-sizing: border-box;
 }
 
 .adp-picker {
+  --adp-bg: #ffffff;
+  --adp-surface: #ffffff;
+  --adp-surface-muted: #f8fafc;
+  --adp-border: #d8dee8;
+  --adp-border-strong: #b9c3d3;
+  --adp-text: #101828;
+  --adp-text-muted: #667085;
+  --adp-primary: #2563eb;
+  --adp-primary-strong: #1d4ed8;
+  --adp-primary-soft: #dbeafe;
+  --adp-danger: #dc2626;
+  --adp-radius: 0.875rem;
+  --adp-shadow: 0 20px 40px rgb(15 23 42 / 0.16), 0 2px 8px rgb(15 23 42 / 0.08);
+  position: relative;
   display: inline-flex;
+  min-width: 17.5rem;
   flex-direction: column;
   gap: 0.75rem;
   font: inherit;
-  color: #111827;
+  color: var(--adp-text);
+}
+
+.adp-picker-inline {
+  min-width: 0;
+}
+
+.adp-field-root {
+  position: relative;
+  display: inline-flex;
+  width: 100%;
+  min-width: 17.5rem;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.adp-field-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--adp-text);
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.adp-required-mark,
+.adp-field-error {
+  color: var(--adp-danger);
+}
+
+.adp-field-control {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  border: 1px solid var(--adp-border);
+  border-radius: 0.75rem;
+  background: var(--adp-surface);
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.adp-field-root[data-open='true'] .adp-field-control,
+.adp-field-control:focus-within {
+  border-color: var(--adp-primary);
+  box-shadow: 0 0 0 3px rgb(37 99 235 / 0.16);
+}
+
+.adp-field-root[data-invalid='true'] .adp-field-control {
+  border-color: var(--adp-danger);
+}
+
+.adp-field-input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--adp-text);
+  cursor: pointer;
+  font: inherit;
+  padding: 0.625rem 5rem 0.625rem 0.875rem;
+}
+
+.adp-field-input:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+[dir='rtl'] .adp-field-input {
+  padding: 0.625rem 0.875rem 0.625rem 5rem;
+}
+
+.adp-field-input::placeholder {
+  color: #98a2b3;
+}
+
+.adp-field-action {
+  position: absolute;
+  inset-inline-end: 0.375rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--adp-text-muted);
+  cursor: pointer;
+  font: inherit;
+  line-height: 1;
+}
+
+.adp-field-clear {
+  inset-inline-end: 2.25rem;
+  font-size: 1.25rem;
+}
+
+.adp-field-toggle {
+  font-size: 1.15rem;
+}
+
+.adp-field-action:not(:disabled):hover {
+  background: var(--adp-surface-muted);
+  color: var(--adp-text);
+}
+
+.adp-field-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.adp-field-helper,
+.adp-field-error {
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+
+.adp-field-helper {
+  color: var(--adp-text-muted);
+}
+
+.adp-popover {
+  position: absolute;
+  z-index: 40;
+  inset-block-start: calc(100% + 0.5rem);
+  inset-inline-start: 0;
+  width: max-content;
+  max-width: min(calc(100vw - 2rem), 39rem);
+  border-radius: var(--adp-radius);
+  background: var(--adp-bg);
+  box-shadow: var(--adp-shadow);
+}
+
+[dir='rtl'] .adp-popover {
+  inset-inline-start: auto;
+  inset-inline-end: 0;
 }
 
 .adp-date-picker {
   width: 18rem;
   display: inline-flex;
   flex-direction: column;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.75rem;
-  background: #ffffff;
+  gap: 0.625rem;
+  padding: 0.875rem;
+  border: 1px solid var(--adp-border);
+  border-radius: var(--adp-radius);
+  background: var(--adp-surface);
 }
 
 .adp-calendar-header {
@@ -42,7 +196,8 @@
 
 .adp-month-label {
   min-width: 0;
-  font-weight: 600;
+  color: var(--adp-text);
+  font-weight: 700;
   text-align: center;
 }
 
@@ -57,8 +212,32 @@
   width: 2rem;
   height: 2rem;
   border-radius: 999px;
-  background: #f3f4f6;
-  color: #111827;
+  background: var(--adp-surface-muted);
+  color: var(--adp-text);
+  transition: background 140ms ease, color 140ms ease, transform 140ms ease;
+}
+
+.adp-nav-button:not(:disabled):hover,
+.adp-day:not(.adp-day-placeholder):not(:disabled):hover {
+  background: #eef2ff;
+}
+
+.adp-nav-button:not(:disabled):active,
+.adp-day:not(.adp-day-placeholder):not(:disabled):active {
+  transform: scale(0.96);
+}
+
+.adp-nav-button:focus-visible,
+.adp-day:focus-visible,
+.adp-field-action:focus-visible {
+  outline: 3px solid rgb(37 99 235 / 0.25);
+  outline-offset: 2px;
+}
+
+.adp-nav-button:disabled,
+.adp-day:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .adp-range-calendars {
@@ -77,32 +256,27 @@
 }
 
 .adp-range-calendar-surface .adp-date-picker:first-child {
-  border-start-start-radius: 0.75rem;
-  border-end-start-radius: 0.75rem;
+  border-start-start-radius: var(--adp-radius);
+  border-end-start-radius: var(--adp-radius);
 }
 
 .adp-range-calendar-surface .adp-date-picker:last-child {
   margin-inline-start: -1px;
-  border-start-end-radius: 0.75rem;
-  border-end-end-radius: 0.75rem;
+  border-start-end-radius: var(--adp-radius);
+  border-end-end-radius: var(--adp-radius);
 }
 
 .adp-range-nav-button {
   flex: 0 0 auto;
 }
 
-.adp-nav-button:not(:disabled):hover,
-.adp-day:not(.adp-day-placeholder):not(:disabled):hover {
-  background: #e5e7eb;
-}
-
-.adp-nav-button:disabled,
-.adp-day:disabled {
-  cursor: not-allowed;
-  opacity: 0.45;
-}
-
 .adp-calendar-grid {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.adp-weekdays,
+.adp-calendar-row {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 0.25rem;
@@ -113,9 +287,9 @@
 }
 
 .adp-weekday {
-  color: #6b7280;
+  color: var(--adp-text-muted);
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   text-align: center;
 }
 
@@ -129,7 +303,8 @@
   aspect-ratio: 1;
   border-radius: 999px;
   background: transparent;
-  color: #111827;
+  color: var(--adp-text);
+  transition: background 140ms ease, color 140ms ease, transform 140ms ease, box-shadow 140ms ease;
 }
 
 .adp-day-placeholder {
@@ -138,29 +313,34 @@
 }
 
 .adp-day-disabled {
-  color: #9ca3af;
+  color: #98a2b3;
+}
+
+.adp-day-today:not(.adp-day-selected):not(.adp-day-range-start):not(.adp-day-range-end) {
+  box-shadow: inset 0 0 0 1px var(--adp-border-strong);
 }
 
 .adp-day-in-range {
-  border-radius: 0.25rem;
-  background: #dbeafe;
+  border-radius: 0.35rem;
+  background: var(--adp-primary-soft);
+  color: #1e3a8a;
 }
 
 .adp-day-selected,
 .adp-day-range-start,
 .adp-day-range-end {
-  background: #2563eb;
+  background: var(--adp-primary);
   color: #ffffff;
 }
 
 .adp-day-selected:hover,
 .adp-day-range-start:hover,
 .adp-day-range-end:hover {
-  background: #1d4ed8;
+  background: var(--adp-primary-strong);
 }
 
 .adp-selection-label {
-  color: #4b5563;
+  color: var(--adp-text-muted);
   font-size: 0.875rem;
 }
 
@@ -169,14 +349,23 @@
 }
 
 @media (max-width: 640px) {
-  .adp-picker {
+  .adp-picker,
+  .adp-field-root {
     width: 100%;
+    min-width: 0;
+  }
+
+  .adp-popover {
+    position: static;
+    width: 100%;
+    max-width: none;
+    box-shadow: none;
   }
 
   .adp-date-picker {
     width: 100%;
-    padding: 0.5rem;
-    border-radius: 0.5rem;
+    padding: 0.625rem;
+    border-radius: 0.625rem;
   }
 
   .adp-range-calendars-desktop {
@@ -199,12 +388,12 @@
   }
 
   .adp-range-calendars-mobile .adp-date-picker:first-child {
-    border-start-start-radius: 0.5rem;
-    border-start-end-radius: 0.5rem;
+    border-start-start-radius: 0.625rem;
+    border-start-end-radius: 0.625rem;
   }
 
   .adp-range-calendars-mobile .adp-date-picker:last-child {
-    border-end-start-radius: 0.5rem;
-    border-end-end-radius: 0.5rem;
+    border-end-start-radius: 0.625rem;
+    border-end-end-radius: 0.625rem;
   }
 }

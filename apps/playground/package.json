@@ -1,10 +1,11 @@
 {
-  "name": "playground",
+  "name": "@aryan-date-picker/playground",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"
   },
   "dependencies": {
